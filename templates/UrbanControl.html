@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>UrBanFarming</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0.8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+  <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='raphael-min.js') }}"></script>
+<script src="{{ url_for('static', filename='jquery-1.8.2.min.js') }}"></script>
+<script src="{{ url_for('static', filename='socket.io-1.2.0.js') }}"></script>
+</head>
+<body>
+
+<div class="jumbotron text-center">
+  <h1>ControlFarm</h1>
+    
+</div>
+  
+<div class="container">
+  <div class="row">
+
+    <div  id="Pump" class="col-sm-4">
+      <h1 style="text-align:center;"> Pump  </h1>
+      <div class="row">
+        <div class="col-sm-3"></div>
+
+        <div class="col-sm-3">
+          <button onclick="ClickP_On()" style="text-align:center;"> ON </button>
+        </div>
+
+        <div class="col-sm-3">
+          <button onclick="ClickP_Off()"> OFF </button>
+        </div>
+        
+        <div class="col-sm-3">
+          <span id="ClickP"> </span>
+        </div>
+        
+      </div>
+    
+    
+    
+    </div>
+
+    <div id="Valve" class="col-sm-4">
+    <h1 style="text-align:center;"><font color="black"> Valve </font> </h1>
+      <button onclick="ClickV_On()"> ON </button>
+    <button onclick="ClickV_Off()"> OFF </button>
+    <span id="ClickV"> </span>
+    </div>
+
+    <div id="Light" class="col-sm-4">
+      <h1><font color="Gray"> Status </font> </h1>
+      <h4> WaterLevel
+      <span id="Status"> </span>
+    </div>
+
+</div>
+<script type="text/javascript" charset="utf-8">
+  var socket = io();
+  
+  var data={"P": 0, "V": 0}
+
+  function ClickP_On(P)
+  {
+    document.getElementById("ClickP").innerHTML="ON";
+    P = 1;
+    data["P"]=P;
+    socket.emit('c2s',  JSON.stringify(data));
+    console.log(P)
+  }
+  function ClickP_Off(P)
+  {
+    document.getElementById("ClickP").innerHTML="Off";
+    P = 2;
+    data["P"]=P;
+    socket.emit('c2s',  JSON.stringify(data));
+    console.log(P)
+  }  
+  function ClickV_On(V)
+  {
+    document.getElementById("ClickV").innerHTML="ON";
+    V = 1;
+    data["V"]=V;
+    socket.emit('c2s',  JSON.stringify(data));
+    console.log(V)
+  }
+  function ClickV_Off(V)
+  {
+    document.getElementById("ClickV").innerHTML="Off";
+    V = 2;
+    data["V"]=V;
+    socket.emit('c2s',  JSON.stringify(data));
+    console.log(V)
+  }
+  socket.on('status', function(Status)
+    {
+      document.getElementById("Status").innerHTML=Status;
+      console.log(Status)
+    });
+
+</script>
+
+</body>
+</html>

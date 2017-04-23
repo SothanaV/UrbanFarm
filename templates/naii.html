@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>SmartMushroomBox</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0.8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+  <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='raphael-min.js') }}"></script>
+<script src="{{ url_for('static', filename='jquery-1.8.2.min.js') }}"></script>
+<script src="{{ url_for('static', filename='morris-0.4.1.min.js') }}"></script>
+</head>
+<body>
+
+<div class="jumbotron text-center">
+  <h1>SmartMushroomBox</h1>
+  <p><font color="#6b6a6a"> กล่องเห็ดอัจฉริยะ </font></p> 
+</div>
+  
+<div class="container">
+  <div class="row">
+    <div  id="Temp" class="col-sm-4">
+      <h3 style="text-align:center;">TEMPERATURE</h3>
+      <h5 style="text-align:center;"> อุณหภูมิ </h5>
+      <h1 style="text-align:center;" id="temp"> </h1>
+      <!--<button id="B_G_temp" class="btn btn-default" style="text-align:center;"> Hide/Show Graph</button>-->
+      <div id="G_temp"></div>
+      <script src="{{ url_for('static', filename='socket.io-1.2.0.js') }}"></script>
+      <script type="text/javascript">
+                  var socket = io();
+              socket.on('s2cT', function(temp)
+              {
+                console.log(temp);
+                document.getElementById("temp").innerHTML=temp+'&#8451';
+              });
+                  $.getJSON( "data.json", function( data ) {
+              data.forEach( function(element,i){
+                data[i].Red=data[i].Red/32;
+              });
+              Morris.Line({
+              element: 'G_temp',
+              data: data,
+              xkey: 'timestamp',
+              ykeys: ['stateT','targetT'],
+              pointSize: 0,
+              ymin: 14,
+              ymax: 23,
+              });
+              });
+
+        $(document).ready(function()
+        {
+          $("#Temp").click(function()
+          {
+          $("#G_temp").slideToggle("slow");
+          });
+        });           
+      </script>
+      <style>
+        #G_temp
+       {
+          display:none;
+          overflow:hidden;
+       }
+      </style>
+    </div>
+    <div id="Humi" class="col-sm-4">
+      <h3 style="text-align:center;">HUMIDITY</h3>
+      <h5 style="text-align:center;"> ความชื้น </h5>
+      <h1 style="text-align:center;" id="humi"> </h1>
+      <div id="G_humi"></div>
+      <script src="{{ url_for('static', filename='socket.io-1.2.0.js') }}"></script>
+      <script type="text/javascript">
+                  var socket = io();
+              socket.on('s2cH', function(humi)
+              {
+                console.log(humi);
+                document.getElementById("humi").innerHTML=humi+"%";
+              });
+              $.getJSON( "data.json", function( data ) {
+              data.forEach( function(element,i){
+                data[i].Red=data[i].Red/32;
+              });
+              Morris.Line({
+              element: 'G_humi',
+              data: data,
+              xkey: 'timestamp',
+              ykeys: ['stateH'],
+              pointSize: 0,
+              ymin: 15,
+              ymax: 65
+              });
+              });
+              $(document).ready(function()
+        {
+          $("#Humi").click(function()
+          {
+          $("#G_humi").slideToggle("slow");
+          });
+        });           
+      </script>
+      <style>
+    #G_humi
+    {
+      display:none;
+      overflow:hidden;
+    }
+    </style>
+      <p></p>
+      <p></p>
+    </div>
+    <div id="Light" class="col-sm-4">
+      <h3 style="text-align:center;">LIGHT</h3>
+      <h5 style="text-align:center;"> แสง </h5>
+      <h1 style="text-align:center;" id="light"> </h1>
+      <div id="G_light"></div>
+      <script src="{{ url_for('static', filename='socket.io-1.2.0.js') }}"></script>
+      <script type="text/javascript">
+      var socket = io();
+                socket.on('L_status', function(L)
+                {
+                  console.log(L);
+                  document.getElementById("light").innerHTML=L;
+                });
+                $.getJSON( "data.json", function( data ) {
+                data.forEach( function(element,i){
+                  data[i].Red=data[i].Red/255;
+                });
+                Morris.Line({
+                element: 'G_light',
+                data: data,
+                xkey: 'timestamp',
+                ykeys: ['Red'],
+                pointSize: 0
+                });
+                });
+          $(document).ready(function()
+        {
+          $("#Light").click(function()
+          {
+          $("#G_light").slideToggle("slow");
+          });
+        });           
+      </script>
+      <style>
+    #G_light
+    {
+      display:none;
+      overflow:hidden;
+    }
+    </style>
+          
+      <p></p> 
+      <p></p>
+    </div>
+  </div>
+      <div class="col-sm4">
+          <h2 style="text-align:center";><font color="black"> GRAPH </font></h2>
+          <h5 style="text-align:center";> กราฟ </h5>
+          <div id="graph" style="text-align:center";></div>
+            <script type="text/javascript">
+                 $.getJSON( "data.json", function( data ) {
+                  data.forEach( function(element,i){
+                    data[i].Red=data[i].Red/32;
+                  });
+                  Morris.Line({
+                  element: 'graph',
+                  data: data,
+                  xkey: 'timestamp',
+                  ykeys: ['stateT', 'stateH','targetT','Red'],
+                  labels: ['Temperature', 'Humidity','TargetTemperature','Light'],
+                  pointSize: 0
+                });
+                });         
+            </script>
+      </div>
+      <h3 style="text-align:center";> PSYCHROMETRIC CHART <a href="http://172.20.10.11:5000/d3">Go To CHART </a> </h3>
+      <script src="{{ url_for('static', filename='d3.v3.min.js') }}"></script>
+      <style type="text/css" style="text-align:center" >
+      
+</div>
+
+
+</body>
+</html>
