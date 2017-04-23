@@ -15,7 +15,10 @@
 
 <div class="jumbotron text-center">
   <h1>ControlFarm</h1>
-    
+    <h2> Mode </h2>
+    <button onclick="ClickA()"> Auto </button>
+    <button onclick="ClickM()"> Manual </button>
+    <span id="Click"> </span>
 </div>
   
 <div class="container">
@@ -52,9 +55,14 @@
     </div>
 
     <div id="Light" class="col-sm-4">
-      <h1><font color="Gray"> Status </font> </h1>
+      <h1><font > Status </font> </h1>
       <h4> WaterLevel
       <span id="Status"> </span>
+      <h4> Temperature
+      <span id="Temp"> </span>
+      <h4> Humidity
+      <span id="Humi"> </span>
+
     </div>
 
 </div>
@@ -100,6 +108,30 @@
       document.getElementById("Status").innerHTML=Status;
       console.log(Status)
     });
+  socket.on('s2c_t', function(Temp)
+    {
+      document.getElementById("Temp").innerHTML=Temp;
+      console.log(Temp)
+    });
+  socket.on('s2c_h', function(Humi)
+    {
+      document.getElementById("Humi").innerHTML=Humi;
+      console.log(Humi)
+    });
+  function ClickA(command)
+  {
+    document.getElementById("Click").innerHTML="Auto";
+    command = 1;
+    socket.emit('c2sClick' ,command);
+    console.log(command)
+  } 
+  function ClickM(command)
+  {
+    document.getElementById("Click").innerHTML="Manual";
+    command = 0;
+    socket.emit('c2sClick' ,command);
+    console.log(command)
+  }
 
 </script>
 

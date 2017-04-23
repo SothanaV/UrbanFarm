@@ -13,18 +13,22 @@ io = StringIO()
 
 global Pump
 global Value
+global Mode
 
 Pump = "100"
 Valve = "200"
 
-@app.route("/data/<n>/<Water>")																			#Get data From Client(Wemos)
-def data(n,Water):
+@app.route("/data/<t>/<h>/<w>")																			#Get data From Client(Wemos)
+def data(t,h,w):
 	global Pump 
 	global Valve
-	log= str(datetime.now()) + "||Value: %s Water %s"%(n,Water)
+	global Mode
+	log= str(datetime.now()) + "|| Temp %s Humi %s W_Level %s"%(t,h,w)
 	print log
-	socketio.emit('status',Water)
-	return "%s,%s"%(Pump,Valve)
+	socketio.emit('status',w)
+	socketio.emit('s2c_t',t)
+	socketio.emit('s2c_h',h)
+	return "%s,%s,%s"%(Pump,Valve,Mode)
 
 @socketio.on('c2s')																				#listen Data From Browser parth socketio "c2s" = cilent to server 
 def C2S(data):
@@ -45,10 +49,14 @@ def C2S(data):
 		Valve = "201"
 	if(ComV == 2):
 		Valve = "200"
-
-
-		
-
+@socketio.on('c2sClick')
+def Mode(command):
+	global Mode
+	if(command==1):
+		Mode = "A"
+	if(command==0):
+		Mode = "M"
+	print "Command %s Mode %s"%(command,Mode)	
 @app.route("/admin")
 def ad():
 	return render_template('UrbanControl.html')
