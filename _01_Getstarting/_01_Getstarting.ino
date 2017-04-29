@@ -88,7 +88,7 @@ void go_auto(String w )
   if(w=="HIGH_Water"){
     digitalWrite(Pump,HIGH);
     Serial.println("OnPump");
-    delay(10000);
+    delay(10000); 
     digitalWrite(Pump,LOW);
     Serial.println("OffPump");
   }
@@ -173,13 +173,18 @@ void SendData(float h,float t,String w)
               
         }
         
-        http.end();
         
-    }
-    else
+         else
         {
           go_auto(w);
         }
+        http.end();   
+    }
+    else
+    {
+      go_auto(w);
+    }
+    
     delay(1000);
   }
 

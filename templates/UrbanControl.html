@@ -11,98 +11,126 @@
 <script src="{{ url_for('static', filename='jquery-1.8.2.min.js') }}"></script>
 <script src="{{ url_for('static', filename='socket.io-1.2.0.js') }}"></script>
 </head>
+<style>
+.switch 
+{
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {display:none;}
+
+.slider 
+{
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before 
+{
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider 
+{
+  background-color: #3399ff;
+
+}
+
+input:focus + .slider 
+{
+  box-shadow: 0 0 1px #3399ff;
+
+}
+
+input:checked + .slider:before 
+{
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+  
+}
+
+/* Rounded sliders */
+.slider.round 
+{
+  border-radius: 34px;
+}
+
+.slider.round:before 
+{
+  border-radius: 50%;
+}
+
+</style>
+
 <body>
 
 <div class="jumbotron text-center">
-  <h1>ControlFarm</h1>
-    <h2> Mode </h2>
-    <button onclick="ClickA()"> Auto </button>
-    <button onclick="ClickM()"> Manual </button>
-    <span id="Click"> </span>
+  <h1>Control HURB Farm</h1>  
 </div>
   
 <div class="container">
   <div class="row">
-
-    <div  id="Pump" class="col-sm-4">
-      <h1 style="text-align:center;"> Pump  </h1>
-      <div class="row">
-        <div class="col-sm-3"></div>
-
-        <div class="col-sm-3">
-          <button onclick="ClickP_On()" style="text-align:center;"> ON </button>
-        </div>
-
-        <div class="col-sm-3">
-          <button onclick="ClickP_Off()"> OFF </button>
-        </div>
-        
-        <div class="col-sm-3">
-          <span id="ClickP"> </span>
-        </div>
-        
-      </div>
-    
-    
-    
+    <div  id="MODE" class="col-sm-4">
+    <h1><font color="white">---</font></h1>
+    <h1 style="text-align:center";> Mode 
+    <h2 style="text-align:center";> Auto  
+        <label class="switch">
+          <input type="checkbox"  id="M" value="OFF" style="color:blue" onclick="toggle3(this);">
+           <div class="slider round" ></div>
     </div>
+    <h1><font color="white">---</font></h1>
 
-    <div id="Valve" class="col-sm-4">
-    <h1 style="text-align:center;"><font color="black"> Valve </font> </h1>
-      <button onclick="ClickV_On()"> ON </button>
-    <button onclick="ClickV_Off()"> OFF </button>
-    <span id="ClickV"> </span>
+    <div id="Control" class="col-sm-4">
+    <h1 style="text-align:center";> Control </h1>
+    <div>
+    <h2 style="text-align:center";> Pump 
+        <label class="switch">
+           <input type="checkbox"  id="P" value="OFF" style="color:blue" onclick="toggle(this);">
+              <div class="slider round" ></div>
     </div>
-
-    <div id="Light" class="col-sm-4">
-      <h1><font > Status </font> </h1>
-      <h4> WaterLevel
-      <span id="Status"> </span>
-      <h4> Temperature
-      <span id="Temp"> </span>
-      <h4> Humidity
-      <span id="Humi"> </span>
-
+    <div>
+    <h2 style="text-align:center";> Valve
+        <label class="switch">
+          <input type="checkbox"  id="V" value="OFF" style="color:blue" onclick="toggle2(this);">
+            <div class="slider round" ></div>
     </div>
-
+    <h1><font color="white">---</font></h1>
+    </div>
+    <div id="status" class="col-sm-4">
+      <h1 style="text-align:center";><font > Status </font> </h1>
+          <h3> WaterLevel<font color="White">--</font> :
+            <span id="Status"> </span>
+          <h3> Temperature :
+            <span id="Temp"> </span>
+          <h3> Humidity  <font color="White">----</font>  :
+            <span id="Humi"> </span>
+    </div>
+  </div>
 </div>
 <script type="text/javascript" charset="utf-8">
   var socket = io();
   
   var data={"P": 0, "V": 0}
 
-  function ClickP_On(P)
-  {
-    document.getElementById("ClickP").innerHTML="ON";
-    P = 1;
-    data["P"]=P;
-    socket.emit('c2s',  JSON.stringify(data));
-    console.log(P)
-  }
-  function ClickP_Off(P)
-  {
-    document.getElementById("ClickP").innerHTML="Off";
-    P = 2;
-    data["P"]=P;
-    socket.emit('c2s',  JSON.stringify(data));
-    console.log(P)
-  }  
-  function ClickV_On(V)
-  {
-    document.getElementById("ClickV").innerHTML="ON";
-    V = 1;
-    data["V"]=V;
-    socket.emit('c2s',  JSON.stringify(data));
-    console.log(V)
-  }
-  function ClickV_Off(V)
-  {
-    document.getElementById("ClickV").innerHTML="Off";
-    V = 2;
-    data["V"]=V;
-    socket.emit('c2s',  JSON.stringify(data));
-    console.log(V)
-  }
   socket.on('status', function(Status)
     {
       document.getElementById("Status").innerHTML=Status;
@@ -132,6 +160,61 @@
     socket.emit('c2sClick' ,command);
     console.log(command)
   }
+  function toggle(button)
+{
+  if(document.getElementById("P").value=="OFF")
+  {
+   document.getElementById("P").value="ON";
+   button = "1"
+   data["P"]=button;
+    socket.emit('c2s',  JSON.stringify(data));
+  }
+
+  else if(document.getElementById("P").value=="ON")
+  {
+   document.getElementById("P").value="OFF";
+   button = "2"
+   data["P"]=button;
+    socket.emit('c2s',  JSON.stringify(data));
+}
+   console.log(button);
+}
+function toggle2(button2)
+{
+  if(document.getElementById("V").value=="OFF")
+  {
+   document.getElementById("V").value="ON";
+   button2 = "1"
+   data["V"]=button2;
+    socket.emit('c2s',  JSON.stringify(data));
+  }
+
+  else if(document.getElementById("V").value=="ON")
+  {
+   document.getElementById("V").value="OFF";
+   button2 = "2"
+   data["V"]=button2;
+    socket.emit('c2s',  JSON.stringify(data));
+}
+   console.log(button2);
+}
+function toggle3(button2)
+{
+  if(document.getElementById("M").value=="OFF")
+  {
+   document.getElementById("M").value="ON";
+   button3 = 1
+   socket.emit('c2sClick' ,button3);
+  }
+
+  else if(document.getElementById("M").value=="ON")
+  {
+   document.getElementById("M").value="OFF";
+   button3 = 0
+   socket.emit('c2sClick' ,button3);
+}
+   console.log(button2);
+}
 
 </script>
 

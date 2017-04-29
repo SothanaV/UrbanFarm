@@ -43,12 +43,16 @@ def C2S(data):
 
 	if (ComP == 1):
 		Pump = "101"
+		print "Pump_ON"
 	if(ComP == 2):
 		Pump = "100"
+		print "Pump_OFF"
 	if (ComV == 1):
 		Valve = "201"
+		print "Valve_ON"
 	if(ComV == 2):
 		Valve = "200"
+		print "Valve_OFF"
 @socketio.on('c2sClick')
 def Mode(command):
 	global Mode
@@ -60,5 +64,8 @@ def Mode(command):
 @app.route("/admin")
 def ad():
 	return render_template('UrbanControl.html')
-
+@app.route("/switch")
+def switch():
+	return render_template('switch.html')
+ 
 
